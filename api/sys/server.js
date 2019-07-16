@@ -9,7 +9,7 @@
 
 require('./fw');
 require('dotenv').config();
-const Hapi  = require('hapi');
+const Hapi  = require('@hapi/hapi');
 
 fw.server = new Hapi.Server({
     port: process.env.PORT || 3030,
