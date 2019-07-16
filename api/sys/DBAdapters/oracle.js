@@ -1,7 +1,7 @@
 /**
  * File: oracle.js
  * Author: Mario Nuñez
- * Version: 1.0
+ * Version: 1.1
  * Description: Oracle Adapter, Handles connections made to oracle databases
  */
 
@@ -12,9 +12,11 @@ class oracleAdapter
         this.oracledb = require('oracledb');
         this.SimpleOracleDB = require('simple-oracledb');
         this.SimpleOracleDB.extend(this.oracledb);
+        this.oracledb.outFormat = this.oracledb.OBJECT;
+        this.oracledb.autoCommit = true;
         this.pool = null;
-        this.conn = null;
-        this.dbconfig = config;    
+        this.dbconfig = config;
+        this.MAX_ROWS = 1000;    
     }
     
     buildConnectionString()
@@ -36,48 +38,68 @@ class oracleAdapter
     
     async getConnection()
     {
-        this.pool = await this.oracledb.createPool ({
-            user            : this.dbconfig.USERNAME,
-            password        : this.dbconfig.PASSWORD,
-            connectionString: this.buildConnectionString(),
-        });
-        this.startTime = new Date();
-        this.conn = await this.pool.getConnection();
-        return this.conn;
+        if(!this.pool)
+        {
+            this.pool = await this.oracledb.createPool ({
+                user            : this.dbconfig.USERNAME,
+                password        : this.dbconfig.PASSWORD,
+                connectionString: this.buildConnectionString(),
+            });
+            this.startTime = new Date();
+        }
+
+        return await this.pool.getConnection();
     }
-    
-    async closeConn()
-    {
-        if(this.conn) await this.conn.release();
-        this.conn = null;
-    }
-    
+        
     async closePool()
     {
-        if(this.pool.connectionsOpen)
+        if(this.pool && this.pool.connectionsOpen)
         {
-            return await this.pool.close();
+            await this.pool.close();
             this.pool = null;
+            return true;
         }            
         
         return false;
     }
     
-    async commit()
-    {
-        await this.conn.commit();
-    }
-    
     async execute(sql,props)
+    {        
+        const conn = await this.getConnection(); 
+        const result = await conn.execute(sql,props);
+        conn.release();
+        return result;
+    }
+
+
+    async executeProcedure(SQL,Parameters)
     {
-        
-        if(this.conn == null)  await this.getConnection(); 
-        return await this.conn.execute(sql,props);
+        SQL = `
+        BEGIN
+            ${( SQL.endsWith(';') ) ? SQL : `${SQL};`}
+        END;
+        `;
+
+        const conn =  await this.getConnection(); 
+        const result = await conn.execute(SQL,Parameters);
+
+        for( let i in Parameters )
+        {
+            const Param = Parameters[i];
+            if(Param.type === this.oracledb.CURSOR && Param.dir === this.oracledb.BIND_OUT)
+            {
+                const outBindRef = result.outBinds[i];
+                outBindRef.rows = await outBindRef.getRows(this.MAX_ROWS);
+                await outBindRef.close();
+            }
+        }
+
+        conn.release();
+        return result;
     }
     
-    async closeAll()
-    {        
-        await this.closeConn();
+    async close()
+    {
         await this.closePool();
     }    
 }
