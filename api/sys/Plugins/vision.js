@@ -11,7 +11,7 @@ exports = module.exports = async (server) =>
     try 
     {
         // Register
-        await server.register(require('vision'));
+        await server.register(require('@hapi/vision'));
     } catch (e) {
         console.error('Error on vision Plugin', e);
         throw e

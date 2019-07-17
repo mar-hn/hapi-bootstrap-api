@@ -36,7 +36,7 @@ exports = module.exports = async (server) =>
 {
     try 
     {
-        await server.register(require('hapi-auth-basic'));
+        await server.register(require('@hapi/basic'));
     } catch (e) {
         console.error('Error on hapi-auth-basic Plugin', e);
         throw e

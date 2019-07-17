@@ -11,7 +11,7 @@ exports = module.exports = async (server) =>
     try 
     {
         // Register
-        await server.register(require('inert'));
+        await server.register(require('@hapi/inert'));
     } catch (e) {
         console.error('Error on inert Plugin', e);
         throw e

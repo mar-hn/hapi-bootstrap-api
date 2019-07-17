@@ -10,8 +10,8 @@ const fw = global['fw'] = {};
 fw.utils = require('./utils');
 fw.db = new (require('./dbmanager'));
 fw.settings = require('../../config/settings.json');
-fw.joi = require('joi');
-fw.boom = require('boom');
+fw.joi = require('@hapi/joi');
+fw.boom = require('@hapi/boom');
 fw._ = require('lodash');
 
 // alias
