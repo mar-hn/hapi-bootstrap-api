@@ -192,7 +192,7 @@ function requestLog(event,tags)
                  `tags='${tags ? JSON.stringify(tags) : ''}' `+
                  `hostname='${fw.utils.os.hostname()}' `+
                  `method='${event.method.toUpperCase()}' `+
-                 `URL='${event.url.path}' `+
+                 `URL='${event.url.href}' `+
                  `statuscode='${event.response.statusCode}' `+
                  `statusmessage='${event.raw.res.statusMessage}' `+
                  `responsetime=${totalTime} `+
