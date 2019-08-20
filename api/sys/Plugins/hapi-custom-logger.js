@@ -188,7 +188,7 @@ function requestLog(event,tags)
 {
     const totalTime = new Date(event.info.responded) - new Date(event.info.received);
     let strLog = `timestamp='${new Date()}' `+
-                 `remoteAddress='${event.info.remoteAddress}' `+
+                 `remoteAddress='${event.location.ip}' `+
                  `tags='${tags ? JSON.stringify(tags) : ''}' `+
                  `hostname='${fw.utils.os.hostname()}' `+
                  `method='${event.method.toUpperCase()}' `+
@@ -203,9 +203,8 @@ function requestLog(event,tags)
     if(event.auth.token)
         strLog +=`token='${event.auth.token}' `;
 
-    // Removed due to new standards
-    // if( event.response.statusCode != 200 )
-    //     strLog +=`payload='${JSON.stringify(event.payload)}' response='${JSON.stringify(event.response.source)}' `;
+    if( event.response.statusCode != 200 )
+         strLog +=`payload='${JSON.stringify(event.payload)}' response='${JSON.stringify(event.response.source)}' `;
 
     fw.logger.request(strLog);    
 }
