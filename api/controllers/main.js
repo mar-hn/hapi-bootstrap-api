@@ -1,42 +1,37 @@
 //====================
 // Dependencies
 //====================
-// - None -
+// - None
 
-//====================
-// Methods
-//====================
-
-async function main(request,h)
+class mainController 
 {
-    return fw.promise(async (resolve, reject) => 
+    async main()
     {
-        // Make response object
-        let stResponse = { success: true, message: 'Hello World!' };
-        
-        //Do something ...
+        return fw.promise(async (resolve, reject) => 
+        {
+            // Make response object
+            let stResponse = { success: true, message: 'Hello World!' };
+            
+            //Do something ...
 
-        //Return response
-        resolve(stResponse);
-    });
-}
+            //Return response
+            resolve(stResponse);
+        });
+    }
 
-async function greet(request,h)
-{
-    return fw.promise(async (resolve, reject) => 
+    async greet(request,h)
     {
-        // Make response object
-        let stResponse = { success: true, message: '' };
-        
-        stResponse.message = `Hello ${request.params.name}!`;
-
-        //Return response
-        resolve(stResponse);
-    });
+        return fw.promise(async (resolve, reject) => 
+        {
+            // Make response object
+            let stResponse = { success: true, message: '' };
+            
+            stResponse.message = `Hello ${request.params.name}!`;
+    
+            //Return response
+            resolve(stResponse);
+        });
+    }
 }
 
-module.exports = 
-{
-    main,
-    greet
-}
+module.exports = new mainController();

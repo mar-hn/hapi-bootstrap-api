@@ -6,7 +6,7 @@
  */
 'use strict';
 
-exports = module.exports = async (server) => 
+module.exports = async (server) => 
 {
     try 
     {
@@ -14,7 +14,7 @@ exports = module.exports = async (server) =>
         await server.register(require('@hapi/inert'));
     } catch (e) {
         console.error('Error on inert Plugin', e);
-        throw e
+        throw e;
     }
     
     console.log(['info', 'plugin'], 'plugin: inert registered');

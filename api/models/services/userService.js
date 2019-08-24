@@ -18,24 +18,21 @@ const usersDB =
         "insertdate": 1532626156209,
         "lastupdate": 1532626156209
     }
-]
+];
 
-//====================
-// Methods
-//====================
-async function getUsers(bOmitSensitive = true)
+class userService 
 {
-    const users = fw.lodash.map(usersDB, (user) => 
+    async getUsers(bOmitSensitive = true)
     {
-        if(bOmitSensitive) return fw.lodash.omit(user,['salt','password'])
-
-        return user;
-    });
+        const users = fw.lodash.map(usersDB, (user) => 
+        {
+            if(bOmitSensitive) return fw.lodash.omit(user,['salt','password'])
     
-    return users;
+            return user;
+        });
+        
+        return users;
+    }
 }
 
-module.exports = 
-{
-    getUsers
-}
+module.exports = new userService();

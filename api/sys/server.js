@@ -2,9 +2,8 @@
  * File: server.js
  * Author: Mario Nuñez
  * Version: 1.0
- * Description: Proyect startup, inits Server instance
+ * Description: Project startup, inits server instance
  */
-
 'use strict';
 
 require('./fw');
@@ -35,7 +34,7 @@ function getRoutes()
     let routes = [];
     let index = 0;
 
-    if(fw.utils.isArray(routesPaths))
+    if(Array.isArray(routesPaths))
     {
         for(let r of routesPaths )
             routes.push(require(r));
@@ -49,7 +48,7 @@ function getRoutes()
         // Force all routes to display in swagger
         for(let rx of r)
         {
-            if( fw.utils.isArray() )
+            if( Array.isArray(rx.options.tags) )
                 rx.options.tags.push('api');
             else
                 rx.options.tags = ['api']
@@ -66,7 +65,7 @@ function getPlugins()
     let pluginsPaths = fw.utils.getFiles('sys/Plugins/**/*.js', true);
     let plugins = [];
 
-    if (fw.utils.isArray(pluginsPaths)) 
+    if (Array.isArray(pluginsPaths)) 
     {
         for (let p of pluginsPaths)
             plugins.push(require(p));

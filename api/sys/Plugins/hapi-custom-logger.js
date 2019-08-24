@@ -161,78 +161,84 @@ function formatError(event)
 // Save logger for later use
 fw.logger = new Logger();
 
+// Escape logs
+function elog(str)
+{
+    return str.replace(/\"/g,"'");
+}
+
 function eventLog(event,tags)
 {
-    let strLog = `timestamp='${event.timestamp ? new Date(event.timestamp) : new Date()}' `+
-                 `tags='${JSON.stringify(fw.lodash.keys(tags))}' ` +
-                 `hostname='${fw.utils.os.hostname()}' `;
+    let strLog = `timestamp="${event.timestamp ? new Date(event.timestamp) : new Date()}" `+
+                 `tags="${elog(JSON.stringify(fw.lodash.keys(tags)))}" ` +
+                 `hostname="${elog(fw.utils.os.hostname())}" `;
 
     if (tags.error || event.error) 
     {
         event.error = event.error || {message:'', stack:''};
-        strLog += `type='exception' ` +
-                  `errorMessage='${event.error ? event.error.message : 'unknown'}' ` + 
-                  `stacktrace='${event.error.stack.replace(event.error + '\n',"").split("\n", 1).join("").trim()}' `;
+        strLog += `type="exception" ` +
+                  `errorMessage="${elog(event.error ? event.error.message : 'unknown')}" ` + 
+                  `stacktrace="${elog(event.error.stack.replace(event.error + '\n',"").split("\n", 1).join("").trim())}" `;
     }
 
     if(event.data)
-        strLog += `data=${JSON.stringify(event.data)} `;
+        strLog += `data="${elog(JSON.stringify(event.data))}" `;
 
     if (tags.error || event.error) 
-    fw.logger.error(strLog);
+        fw.logger.error(strLog);
     else
-    fw.logger.info(strLog);
+        fw.logger.info(strLog);
 }
 
 function requestLog(event,tags)
 {
     const totalTime = new Date(event.info.responded) - new Date(event.info.received);
-    let strLog = `timestamp='${new Date()}' `+
-                 `remoteAddress='${event.location.ip}' `+
-                 `tags='${tags ? JSON.stringify(tags) : ''}' `+
-                 `hostname='${fw.utils.os.hostname()}' `+
-                 `method='${event.method.toUpperCase()}' `+
-                 `URL='${event.url.href}' `+
-                 `statuscode='${event.response.statusCode}' `+
-                 `statusmessage='${event.raw.res.statusMessage}' `+
+    let strLog = `timestamp="${new Date()}" `+
+                 `remoteAddress="${event.location.ip}" `+
+                 `tags="${elog(tags ? JSON.stringify(tags) : '')}" `+
+                 `hostname="${elog(fw.utils.os.hostname())}" `+
+                 `method="${elog(event.method.toUpperCase())}" `+
+                 `URL="${elog(event.url.href)}" `+
+                 `statuscode="${event.response.statusCode}" `+
+                 `statusmessage="${elog(event.raw.res.statusMessage)}" `+
                  `responsetime=${totalTime} `+
-                 `user-agent='${event.headers['user-agent']}' `+
-                 `referer='${event.headers.referer}' ` +
+                 `user-agent="${elog(event.headers['user-agent'])}" `+
+                 `referer="${elog(event.headers.referer)}" ` +
                  `isAuthenticated=${event.auth.isAuthenticated} `;
 
     if(event.auth.token)
-        strLog +=`token='${event.auth.token}' `;
+        strLog +=`token="${elog(event.auth.token)}" `;
 
     if( event.response.statusCode != 200 )
-         strLog +=`payload='${JSON.stringify(event.payload)}' response='${JSON.stringify(event.response.source)}' `;
+         strLog +=`payload="${elog(JSON.stringify(event.payload))}" response="${elog(JSON.stringify(event.response.source))}" `;
 
     fw.logger.request(strLog);    
 }
 
 function exceptionHandler(err)
 {
-    fw.logger.error(`timestamp='${new Date()}' ` +
-                    `hostname='${fw.utils.os.hostname()}' ` +
-                    `type='uncaughtException' ` +
-                    `errorMessage='${err ? err.message : 'unknown'}' ` +
-                    `stacktrace='${err.stack.replace(err + '\n',"").split("\n", 1).join("").trim()}' `);
+    fw.logger.error(`timestamp="${new Date()}" ` +
+                    `hostname="${elog(fw.utils.os.hostname())}" ` +
+                    `type="uncaughtException" ` +
+                    `errorMessage="${elog(err ? err.message : 'unknown')}" ` +
+                    `stacktrace="${elog(err.stack.replace(err + '\n',"").split("\n", 1).join("").trim())}" `);
 }
 
 function RejectionHandler(reason, promise)
 {
-    fw.logger.error(`timestamp='${new Date()}' ` +
-                    `hostname='${fw.utils.os.hostname()}' ` +
-                    `type='unhandledRejection' ` +
-                    `errorMessage='${reason}' ` +
-                    `stacktrace='${reason.stack.replace(reason + '\n',"").split("\n", 1).join("").trim()}' `);
+    fw.logger.error(`timestamp="${new Date()}" ` +
+                    `hostname="${elog(fw.utils.os.hostname())}" ` +
+                    `type="unhandledRejection" ` +
+                    `errorMessage="${elog(reason)}" ` +
+                    `stacktrace="${elog(reason.stack.replace(reason + '\n',"").split("\n", 1).join("").trim())}" `);
 }
 
 function shutdownHandler(Signal)
 {           
-    fw.logger.warn(`timestamp='${new Date()}' ` +
-                    `hostname='${fw.utils.os.hostname()}' ` +
-                    `type='shutdown' ` +
-                    `message='Received signal '${Signal}' -  Server shutting down' `);
+    fw.logger.warn(`timestamp="${new Date()}" ` +
+                    `hostname="${elog(fw.utils.os.hostname())}" ` +
+                    `type="shutdown" ` +
+                    `message="Received signal '${elog(Signal)}' -  Server shutting down" `);
 
     process.exit(1);    
 }

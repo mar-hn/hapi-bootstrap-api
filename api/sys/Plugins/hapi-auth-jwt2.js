@@ -11,7 +11,7 @@ const validate = async function (decoded, request)
 };
  
 
-exports = module.exports = async (server) => 
+module.exports = async (server) => 
 {
     try 
     {

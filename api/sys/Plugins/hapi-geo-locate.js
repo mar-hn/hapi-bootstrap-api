@@ -7,7 +7,7 @@
  * The plugin uses ipinfo.io for the IP geo location.
  */
 
-exports = module.exports = async (server) => 
+module.exports = async (server) => 
 {
     try 
     {

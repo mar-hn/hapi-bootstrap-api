@@ -3,16 +3,13 @@
 //====================
 // - None -
 
-//====================
-// Methods
-//====================
-async function getRoles()
+class rolesDAO
 {
-    const SQL = `SELECT * FROM Roles`;    
-    return await fw.db.execute('local',SQL);
+    async getRoles()
+    {
+        const SQL = `SELECT * FROM Roles`;    
+        return await fw.db.execute('local',SQL);
+    }
 }
 
-module.exports = 
-{
-    getRoles
-}
+module.exports = new rolesDAO();

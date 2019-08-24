@@ -32,7 +32,7 @@ const validate = async (request, username, password, h) => {
 
 };
 
-exports = module.exports = async (server) => 
+module.exports = async (server) => 
 {
     try 
     {
